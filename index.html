@@ -9,12 +9,24 @@
     body {
       background: #fdf6e3;
       min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
       font-family: 'Segoe UI', sans-serif;
-      padding: 0 0 40px;
+    }
+    .pg-card {
+      background: #fff8ee;
+      border-radius: 20px;
+      max-width: 440px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(107,16,16,0.10);
+      border: 1px solid #e8d5bc;
     }
     .pg-header {
       background: #6B1010;
-      padding: 12px 24px 18px;
+      padding: 14px 24px 20px;
       text-align: center;
       border-bottom: 4px solid #8B0000;
     }
@@ -26,28 +38,24 @@
       margin-bottom: 4px;
     }
     .pg-header h1 {
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       color: #fff;
       font-family: Georgia, serif;
       font-weight: 700;
       margin: 0;
     }
-    .pg-wrap {
-      max-width: 460px;
-      margin: 0 auto;
-      padding: 28px 20px 0;
-    }
+    .pg-body-inner { padding: 28px 28px 32px; }
     .pg-greeting {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-family: Georgia, serif;
       color: #6B1010;
       font-weight: 700;
       margin-bottom: 6px;
     }
     .pg-sub {
-      font-size: 0.92rem;
-      color: #555;
-      margin-bottom: 24px;
+      font-size: 0.9rem;
+      color: #777;
+      margin-bottom: 22px;
       line-height: 1.5;
     }
     .pg-input {
@@ -59,13 +67,12 @@
       outline: none;
       text-align: center;
       letter-spacing: 2px;
-      background: #fff8ee;
+      background: #fff;
       color: #3a1a1a;
-      font-family: 'Segoe UI', sans-serif;
     }
     .pg-input:focus { border-color: #8B1010; }
     .pg-btn {
-      margin-top: 14px;
+      margin-top: 12px;
       width: 100%;
       padding: 14px;
       background: #7B0F0F;
@@ -79,23 +86,23 @@
     }
     .pg-btn:hover { background: #5e0a0a; }
     .pg-btn:disabled { background: #c4857e; cursor: not-allowed; }
-    .pg-result { margin-top: 28px; display: none; }
+    .pg-result { margin-top: 24px; display: none; }
     .pg-nombre-box {
       background: #7B0F0F;
       border-radius: 12px;
-      padding: 16px 20px;
+      padding: 14px 18px;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
     .pg-nombre-label {
       font-size: 9px;
       letter-spacing: 3px;
       text-transform: uppercase;
       color: #f5c5c5;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
     .pg-nombre-valor {
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-family: Georgia, serif;
       color: #fff;
       font-weight: 700;
@@ -103,88 +110,87 @@
     .pg-section-title {
       font-family: Georgia, serif;
       color: #6B1010;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .pg-total-badge {
-      background: #fff8ee;
+      background: #fff;
       border: 1px solid #d4b8a0;
       border-radius: 10px;
-      padding: 12px 16px;
-      margin-bottom: 16px;
+      padding: 11px 14px;
+      margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.9rem;
-      color: #555;
+      font-size: 0.88rem;
+      color: #666;
     }
     .pg-total-badge span:last-child {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       color: #7B0F0F;
     }
     .pg-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+      gap: 8px;
     }
     .pg-chip {
-      background: #fff8ee;
+      background: #fff;
       border: 1px solid #c9a07a;
       border-radius: 10px;
-      padding: 12px 6px;
+      padding: 10px 4px;
       text-align: center;
     }
     .pg-chip-label {
-      font-size: 9px;
+      font-size: 8px;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       color: #8B4513;
       display: block;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .pg-chip-num {
-      font-size: 1.2rem;
+      font-size: 1.15rem;
       font-weight: 700;
       color: #6B1010;
+      font-family: Georgia, serif;
+    }
+    .pg-footer {
+      background: #7B0F0F;
+      padding: 13px;
+      text-align: center;
+      color: #fff;
+      font-size: 0.88rem;
+      margin-top: 24px;
+      border-radius: 10px;
       font-family: Georgia, serif;
     }
     .pg-error-box {
       background: #fff1f2;
       border: 1px solid #fecdd3;
       border-radius: 12px;
-      padding: 20px;
+      padding: 18px;
       text-align: center;
     }
     .pg-error-titulo { font-size: 1rem; font-weight: 700; color: #be123c; margin-bottom: 4px; }
-    .pg-error-sub { font-size: 0.88rem; color: #888; }
-    .pg-footer {
-      background: #7B0F0F;
-      border-radius: 10px;
-      padding: 14px;
-      text-align: center;
-      color: #fff;
-      font-size: 0.9rem;
-      margin-top: 28px;
-      font-family: Georgia, serif;
-    }
+    .pg-error-sub { font-size: 0.85rem; color: #888; }
   </style>
 </head>
 <body>
-  <div class="pg-header">
-    <div class="pg-header-sup">El Sentimiento Guinda</div>
-    <h1>🎟️ Consulta tus Boletos</h1>
-  </div>
-
-  <div class="pg-wrap">
-    <p class="pg-greeting">¡Hola! 👋</p>
-    <p class="pg-sub">Ingresa tu DNI para ver los números de boleto registrados a tu nombre.</p>
-
-    <input class="pg-input" type="text" id="dniInput" placeholder="Ej: 12345678" maxlength="15" inputmode="numeric"/>
-    <button class="pg-btn" id="btnConsultar" onclick="consultar()">Consultar</button>
-
-    <div class="pg-result" id="resultado"></div>
+  <div class="pg-card">
+    <div class="pg-header">
+      <div class="pg-header-sup">El Sentimiento Guinda</div>
+      <h1>🎟️ Consulta tus Boletos</h1>
+    </div>
+    <div class="pg-body-inner">
+      <p class="pg-greeting">¡Hola! 👋</p>
+      <p class="pg-sub">Ingresa tu DNI para ver los números de boleto registrados a tu nombre.</p>
+      <input class="pg-input" type="text" id="dniInput" placeholder="Ej: 12345678" maxlength="15" inputmode="numeric"/>
+      <button class="pg-btn" id="btnConsultar" onclick="consultar()">Consultar</button>
+      <div class="pg-result" id="resultado"></div>
+    </div>
   </div>
 
   <script>
