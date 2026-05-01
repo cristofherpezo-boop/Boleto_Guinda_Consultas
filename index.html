@@ -7,43 +7,69 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f0f4f8;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: #fdf6e3;
       min-height: 100vh;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 0 0 40px;
     }
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 40px;
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    .pg-header {
+      background: #6B1010;
+      padding: 12px 24px 18px;
       text-align: center;
+      border-bottom: 4px solid #8B0000;
     }
-    h1 { font-size: 1.5rem; color: #1a1a2e; margin-bottom: 8px; }
-    p.sub { color: #666; font-size: 0.95rem; margin-bottom: 28px; }
-    input {
+    .pg-header-sup {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: #f5c5c5;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .pg-header h1 {
+      font-size: 1.6rem;
+      color: #fff;
+      font-family: Georgia, serif;
+      font-weight: 700;
+      margin: 0;
+    }
+    .pg-wrap {
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 28px 20px 0;
+    }
+    .pg-greeting {
+      font-size: 1.3rem;
+      font-family: Georgia, serif;
+      color: #6B1010;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .pg-sub {
+      font-size: 0.92rem;
+      color: #555;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .pg-input {
       width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e0e0e0;
+      padding: 13px 16px;
+      border: 2px solid #d4b8a0;
       border-radius: 10px;
       font-size: 1.1rem;
       outline: none;
-      transition: border 0.2s;
       text-align: center;
       letter-spacing: 2px;
+      background: #fff8ee;
+      color: #3a1a1a;
+      font-family: 'Segoe UI', sans-serif;
     }
-    input:focus { border-color: #4f46e5; }
-    button {
-      margin-top: 16px;
+    .pg-input:focus { border-color: #8B1010; }
+    .pg-btn {
+      margin-top: 14px;
       width: 100%;
       padding: 14px;
-      background: #4f46e5;
-      color: white;
+      background: #7B0F0F;
+      color: #fff;
       border: none;
       border-radius: 10px;
       font-size: 1rem;
@@ -51,112 +77,175 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    button:hover { background: #4338ca; }
-    button:disabled { background: #a5b4fc; cursor: not-allowed; }
-    .resultado {
-      margin-top: 28px;
-      padding: 20px;
+    .pg-btn:hover { background: #5e0a0a; }
+    .pg-btn:disabled { background: #c4857e; cursor: not-allowed; }
+    .pg-result { margin-top: 28px; display: none; }
+    .pg-nombre-box {
+      background: #7B0F0F;
       border-radius: 12px;
-      display: none;
-      text-align: left;
+      padding: 16px 20px;
+      text-align: center;
+      margin-bottom: 20px;
     }
-    .resultado.exito { background: #f5f3ff; border: 1px solid #c4b5fd; }
-    .resultado.error { background: #fff1f2; border: 1px solid #fecdd3; }
-    .nombre-label { font-size: 0.8rem; color: #888; margin-bottom: 2px; }
-    .nombre-valor { font-size: 1rem; font-weight: 600; color: #1a1a2e; margin-bottom: 16px; }
-    .total-texto { font-size: 0.9rem; color: #555; margin-bottom: 12px; }
-    .total-texto span { font-weight: 700; color: #4f46e5; }
-    .grid-boletos {
+    .pg-nombre-label {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #f5c5c5;
+      margin-bottom: 4px;
+    }
+    .pg-nombre-valor {
+      font-size: 1.3rem;
+      font-family: Georgia, serif;
+      color: #fff;
+      font-weight: 700;
+    }
+    .pg-section-title {
+      font-family: Georgia, serif;
+      color: #6B1010;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .pg-total-badge {
+      background: #fff8ee;
+      border: 1px solid #d4b8a0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .pg-total-badge span:last-child {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #7B0F0F;
+    }
+    .pg-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+      gap: 10px;
     }
-    .boleto-chip {
-      background: #ede9fe;
-      border: 1px solid #c4b5fd;
-      border-radius: 8px;
-      padding: 10px 6px;
+    .pg-chip {
+      background: #fff8ee;
+      border: 1px solid #c9a07a;
+      border-radius: 10px;
+      padding: 12px 6px;
       text-align: center;
     }
-    .boleto-chip .chip-label { font-size: 9px; color: #6d28d9; display: block; margin-bottom: 2px; }
-    .boleto-chip .chip-num { font-size: 1.1rem; font-weight: 700; color: #4c1d95; }
-    .error-titulo { font-size: 1.1rem; font-weight: 600; color: #e11d48; margin-bottom: 4px; }
-    .error-sub { font-size: 0.9rem; color: #888; }
+    .pg-chip-label {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #8B4513;
+      display: block;
+      margin-bottom: 3px;
+    }
+    .pg-chip-num {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #6B1010;
+      font-family: Georgia, serif;
+    }
+    .pg-error-box {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .pg-error-titulo { font-size: 1rem; font-weight: 700; color: #be123c; margin-bottom: 4px; }
+    .pg-error-sub { font-size: 0.88rem; color: #888; }
+    .pg-footer {
+      background: #7B0F0F;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      color: #fff;
+      font-size: 0.9rem;
+      margin-top: 28px;
+      font-family: Georgia, serif;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
+  <div class="pg-header">
+    <div class="pg-header-sup">El Sentimiento Guinda</div>
     <h1>🎟️ Consulta tus Boletos</h1>
-    <p class="sub">Ingresa tu DNI para ver tus números de boleto</p>
-    <input type="text" id="dniInput" placeholder="Ej: 12345678" maxlength="15" inputmode="numeric"/>
-    <button id="btnConsultar" onclick="consultar()">Consultar</button>
-    <div class="resultado" id="resultado"></div>
+  </div>
+
+  <div class="pg-wrap">
+    <p class="pg-greeting">¡Hola! 👋</p>
+    <p class="pg-sub">Ingresa tu DNI para ver los números de boleto registrados a tu nombre.</p>
+
+    <input class="pg-input" type="text" id="dniInput" placeholder="Ej: 12345678" maxlength="15" inputmode="numeric"/>
+    <button class="pg-btn" id="btnConsultar" onclick="consultar()">Consultar</button>
+
+    <div class="pg-result" id="resultado"></div>
   </div>
 
   <script>
     const FLOW_URL = "/api/proxy";
 
+    function renderExito(data) {
+      const nombre = data.boletos[0].Nombrecompleto || "—";
+      const chips = data.boletos.map(b => `
+        <div class="pg-chip">
+          <span class="pg-chip-label">N° boleto</span>
+          <span class="pg-chip-num">${b.ID}</span>
+        </div>
+      `).join("");
+      return `
+        <div class="pg-nombre-box">
+          <div class="pg-nombre-label">Participante</div>
+          <div class="pg-nombre-valor">${nombre}</div>
+        </div>
+        <p class="pg-section-title">🎫 Tus números de boleto</p>
+        <div class="pg-total-badge">
+          <span>Cantidad de boletos</span>
+          <span>${data.totalBoletos}</span>
+        </div>
+        <div class="pg-grid">${chips}</div>
+        <div class="pg-footer">¡Mucha suerte en la rifa! 🍀🔥</div>
+      `;
+    }
+
+    function renderError(msg, sub) {
+      return `<div class="pg-error-box"><div class="pg-error-titulo">${msg}</div><div class="pg-error-sub">${sub}</div></div>`;
+    }
+
     async function consultar() {
       const dni = document.getElementById("dniInput").value.trim();
       const btn = document.getElementById("btnConsultar");
       const resultado = document.getElementById("resultado");
-
       if (!dni) { alert("Por favor ingresa tu DNI"); return; }
-
       btn.disabled = true;
       btn.textContent = "Consultando...";
       resultado.style.display = "none";
-
       try {
         const response = await fetch(FLOW_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dni: dni })
+          body: JSON.stringify({ dni })
         });
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
+        if (!response.ok) throw new Error();
         const data = await response.json();
         resultado.style.display = "block";
-
-        if (data.totalBoletos > 0) {
-          resultado.className = "resultado exito";
-          const nombre = data.boletos[0].Nombrecompleto || "—";
-          const chips = data.boletos.map(b => `
-            <div class="boleto-chip">
-              <span class="chip-label">N° boleto</span>
-              <span class="chip-num">${b.ID}</span>
-            </div>
-          `).join("");
-
-          resultado.innerHTML = `
-            <div class="nombre-label">Nombre</div>
-            <div class="nombre-valor">${nombre}</div>
-            <div class="total-texto">Tienes <span>${data.totalBoletos}</span> boleto${data.totalBoletos === 1 ? "" : "s"} registrado${data.totalBoletos === 1 ? "" : "s"}</div>
-            <div class="grid-boletos">${chips}</div>
-          `;
-        } else {
-          resultado.className = "resultado error";
-          resultado.innerHTML = `
-            <div class="error-titulo">No encontrado</div>
-            <div class="error-sub">No hay boletos registrados con este DNI</div>
-          `;
-        }
-      } catch (err) {
-        resultado.className = "resultado error";
+        resultado.innerHTML = data.totalBoletos > 0
+          ? renderExito(data)
+          : renderError("No encontrado", "No hay boletos registrados con este DNI");
+      } catch {
         resultado.style.display = "block";
-        resultado.innerHTML = `
-          <div class="error-titulo">Error de conexión</div>
-          <div class="error-sub">No se pudo conectar. Intenta nuevamente.</div>
-        `;
-        console.error(err);
+        resultado.innerHTML = renderError("Error de conexión", "No se pudo conectar. Intenta nuevamente.");
       }
-
       btn.disabled = false;
       btn.textContent = "Consultar";
     }
 
-    document.getElementById("dniInput").addEventListener("keypress", function(e) {
+    document.getElementById("dniInput").addEventListener("keypress", e => {
       if (e.key === "Enter") consultar();
     });
   </script>
