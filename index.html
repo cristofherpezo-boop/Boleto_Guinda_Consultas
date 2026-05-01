@@ -1,164 +1,86 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Consulta de Boletos - Boleto Guinda</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --guinda: #6B0C00; --guinda-light: #8B1A0E;
-      --dorado: #C9A86C; --dorado-light: #E2C98A;
-      --crema: #FFFBEB; --crema-oscuro: #F0E6C8; --texto: #2A0A00;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Lato', sans-serif;
-      background-color: var(--guinda);
-      background-image: radial-gradient(ellipse at 20% 50%, rgba(201,168,108,0.12) 0%, transparent 60%),
-                        radial-gradient(ellipse at 80% 20%, rgba(201,168,108,0.08) 0%, transparent 50%);
-      min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; padding: 24px;
-    }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background-image: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(201,168,108,0.03) 40px, rgba(201,168,108,0.03) 41px);
-      pointer-events: none;
-    }
-    .container { width: 100%; max-width: 460px; position: relative; z-index: 1; }
-    .logo-wrap { text-align: center; margin-bottom: 24px; }
-    .logo-wrap img { height: 90px; width: auto; border-radius: 8px; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4)); }
-    .card { background: var(--crema); border-radius: 4px; overflow: hidden;
-      box-shadow: 0 0 0 1px rgba(201,168,108,0.3), 0 24px 64px rgba(0,0,0,0.5); }
-    .card-header { background: var(--guinda); padding: 20px 28px; text-align: center; border-bottom: 3px solid var(--dorado); }
-    .card-header .eyebrow { font-size: 0.65rem; letter-spacing: 4px; text-transform: uppercase; color: var(--dorado); font-weight: 700; margin-bottom: 4px; opacity: 0.8; }
-    .card-header h1 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--crema); font-weight: 700; }
-    .card-body { padding: 28px; }
-    .input-label { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--guinda); font-weight: 700; margin-bottom: 8px; display: block; opacity: 0.7; }
-    input[type="text"] {
-      width: 100%; padding: 14px 18px; border: 2px solid var(--crema-oscuro); border-radius: 2px;
-      font-size: 1.3rem; font-family: 'Lato', sans-serif; font-weight: 700; color: var(--texto);
-      background: white; outline: none; text-align: center; letter-spacing: 5px;
-      transition: border-color 0.2s, box-shadow 0.2s; margin-bottom: 12px;
-    }
-    input[type="text"]:focus { border-color: var(--dorado); box-shadow: 0 0 0 3px rgba(201,168,108,0.2); }
-    input[type="text"]::placeholder { color: #ccc; letter-spacing: 2px; font-weight: 300; }
-    button {
-      width: 100%; padding: 15px; background: var(--guinda); color: var(--dorado-light);
-      border: none; border-radius: 2px; font-family: 'Lato', sans-serif;
-      font-size: 0.75rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
-      cursor: pointer; transition: background 0.2s, transform 0.1s;
-    }
-    button:hover { background: var(--guinda-light); }
-    button:active { transform: scale(0.99); }
-    button:disabled { background: #bbb; color: #999; cursor: not-allowed; transform: none; }
-    .sep { display: flex; align-items: center; gap: 10px; margin: 22px 0; }
-    .sep::before, .sep::after { content: ''; flex: 1; height: 1px; background: var(--crema-oscuro); }
-    .sep span { color: var(--dorado); font-size: 0.9rem; }
-    .resultado-error { display: none; background: #fff1f2; border: 1px solid #fecdd3; border-radius: 2px; padding: 20px; text-align: center; }
-    .resultado-error .icono { font-size: 1.8rem; margin-bottom: 8px; }
-    .resultado-error .msg-principal { font-weight: 700; color: #9f1239; font-size: 1rem; }
-    .resultado-error .msg-sub { font-size: 0.82rem; color: #be123c; margin-top: 4px; opacity: 0.8; }
-    .resultado-exito { display: none; }
-    .exito-header { background: var(--guinda); border-radius: 2px; padding: 16px; text-align: center; margin-bottom: 16px; }
-    .exito-nombre { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--crema); font-weight: 700; margin-bottom: 2px; }
-    .exito-count { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--dorado); font-weight: 700; }
-    .tickets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
-    .ticket-item { background: var(--guinda); border-radius: 2px; padding: 14px 8px; text-align: center; position: relative; overflow: hidden; animation: fadeUp 0.3s ease both; }
-    .ticket-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--dorado), transparent); }
-    .ticket-lbl { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: var(--dorado); opacity: 0.7; margin-bottom: 4px; }
-    .ticket-num { font-family: 'Playfair Display', serif; font-size: 1.7rem; font-weight: 900; color: var(--crema); line-height: 1; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-    .card-footer { background: var(--crema-oscuro); border-top: 1px solid rgba(201,168,108,0.3); padding: 12px 28px; text-align: center; font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: var(--guinda); opacity: 0.6; }
-    .page-footer { text-align: center; margin-top: 20px; color: rgba(201,168,108,0.4); font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; }
-    .loading-dots::after { content: ''; animation: dots 1.2s steps(4, end) infinite; }
-    @keyframes dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="logo-wrap">
-      <img src="logo.png" alt="Boleto Guinda" onerror="this.style.display='none'"/>
-    </div>
-    <div class="card">
-      <div class="card-header">
-        <div class="eyebrow">El Sentimiento Guinda</div>
-        <h1>Consulta tus boletos</h1>
-      </div>
-      <div class="card-body">
-        <label class="input-label" for="dniInput">Ingresa tu DNI</label>
-        <input type="text" id="dniInput" placeholder="12345678" maxlength="15" inputmode="numeric"/>
-        <button id="btnConsultar" onclick="consultar()">Verificar mis boletos</button>
-        <div class="sep"><span>✦</span></div>
-        <div class="resultado-error" id="resultadoError">
-          <div class="icono">🔍</div>
-          <div class="msg-principal" id="msgPrincipal">Sin boletos</div>
-          <div class="msg-sub" id="msgSub">No hay boletos registrados con este DNI</div>
-        </div>
-        <div class="resultado-exito" id="resultadoExito">
-          <div class="exito-header">
-            <div class="exito-nombre" id="exitoNombre"></div>
-            <div class="exito-count" id="exitoCount"></div>
-          </div>
-          <div class="tickets-grid" id="ticketsGrid"></div>
-        </div>
-      </div>
-      <div class="card-footer">Viernes 5 · Junio 2026 · Proscenio UDEP</div>
-    </div>
-    <div class="page-footer">@elsentimientoguinda</div>
-  </div>
-  <script>
-    const FLOW_URL = "/api/proxy";
+<script>
+    // Asegúrate de reemplazar esta URL con tu link real de Power Automate (HTTP POST URL)
+    const FLOW_URL = "TU_URL_DE_POWER_AUTOMATE_AQUÍ";
+
     async function consultar() {
-      const dni = document.getElementById("dniInput").value.trim();
+      const dniInput = document.getElementById("dniInput");
+      const dni = dniInput.value.trim();
       const btn = document.getElementById("btnConsultar");
       const resultadoError = document.getElementById("resultadoError");
       const resultadoExito = document.getElementById("resultadoExito");
-      if (!dni) { alert("Por favor ingresa tu DNI"); return; }
+      
+      if (!dni) { 
+        alert("Por favor ingresa tu DNI"); 
+        return; 
+      }
+
+      // Reset de interfaz
       resultadoError.style.display = "none";
       resultadoExito.style.display = "none";
       btn.disabled = true;
       btn.innerHTML = '<span class="loading-dots">Consultando</span>';
+
       try {
         const response = await fetch(FLOW_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dni })
+          body: JSON.stringify({ dni: dni })
         });
-        if (!response.ok) throw new Error("HTTP " + response.status);
+
+        if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
         const data = await response.json();
-        if (data.totalBoletos > 0 && data.boletos && data.boletos.length > 0) {
-          const nombre = data.boletos[0].Nombre_completo || data.boletos[0].Title || "";
+
+        // VALIDACIÓN: Power Automate a veces devuelve los datos dentro de 'body' o directo en la raíz
+        const listaBoletos = data.boletos || data; 
+        const total = data.totalBoletos || (Array.isArray(listaBoletos) ? listaBoletos.length : 0);
+
+        if (total > 0 && Array.isArray(listaBoletos)) {
+          // Extraer nombre del primer registro
+          const primerRegistro = listaBoletos[0];
+          const nombre = primerRegistro.Nombre_completo || primerRegistro.Nombre || "Comprador";
+          
           document.getElementById("exitoNombre").textContent = nombre;
-          document.getElementById("exitoCount").textContent =
-            data.totalBoletos === 1 ? "1 boleto registrado" : data.totalBoletos + " boletos registrados";
+          document.getElementById("exitoCount").textContent = 
+            total === 1 ? "1 boleto registrado" : total + " boletos registrados";
+
           const grid = document.getElementById("ticketsGrid");
           grid.innerHTML = "";
-          data.boletos.forEach(function(boleto, i) {
+
+          listaBoletos.forEach((boleto, i) => {
+            // Intentar obtener el ID de varias fuentes comunes de SharePoint/Excel
+            const ticketID = boleto.ID_Ticket || boleto.ID || boleto.Title || "---";
+            
             const div = document.createElement("div");
             div.className = "ticket-item";
-            div.style.animationDelay = (i * 0.06) + "s";
-            div.innerHTML = '<div class="ticket-lbl">Boleto</div><div class="ticket-num">' + boleto.ID_Ticket + '</div>';
+            div.style.animationDelay = (i * 0.08) + "s";
+            div.innerHTML = `
+              <div class="ticket-lbl">Boleto</div>
+              <div class="ticket-num">${ticketID}</div>
+            `;
             grid.appendChild(div);
           });
+
           resultadoExito.style.display = "block";
         } else {
-          document.getElementById("msgPrincipal").textContent = "Sin boletos";
-          document.getElementById("msgSub").textContent = "No hay boletos registrados con este DNI";
-          resultadoError.style.display = "block";
+          mostrarError("Sin boletos", "No hay boletos validados con este DNI.");
         }
       } catch (err) {
-        document.getElementById("msgPrincipal").textContent = "Error de conexion";
-        document.getElementById("msgSub").textContent = "No se pudo conectar. Intenta nuevamente.";
-        resultadoError.style.display = "block";
-        console.error(err);
+        console.error("Error detallado:", err);
+        mostrarError("Error de conexión", "No logramos conectar con el sistema. Revisa tu internet.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Verificar mis boletos";
       }
-      btn.disabled = false;
-      btn.textContent = "Verificar mis boletos";
     }
-    document.getElementById("dniInput").addEventListener("keypress", function(e) {
+
+    function mostrarError(titulo, sub) {
+      document.getElementById("msgPrincipal").textContent = titulo;
+      document.getElementById("msgSub").textContent = sub;
+      document.getElementById("resultadoError").style.display = "block";
+    }
+
+    document.getElementById("dniInput").addEventListener("keypress", (e) => {
       if (e.key === "Enter") consultar();
     });
-  </script>
-</body>
-</html>
+</script>
