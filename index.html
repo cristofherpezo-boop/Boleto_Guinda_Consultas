@@ -1,86 +1,133 @@
-<script>
-    // Asegúrate de reemplazar esta URL con tu link real de Power Automate (HTTP POST URL)
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consulta de Boletos - Boleto Guinda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --guinda: #6B0C00; --guinda-light: #8B1A0E;
+      --dorado: #C9A86C; --dorado-light: #E2C98A;
+      --crema: #FFFBEB; --crema-oscuro: #F0E6C8; --texto: #2A0A00;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Lato', sans-serif;
+      background-color: var(--guinda);
+      background-image: radial-gradient(ellipse at 20% 50%, rgba(201,168,108,0.12) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 20%, rgba(201,168,108,0.08) 0%, transparent 50%);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .container { width: 100%; max-width: 460px; position: relative; z-index: 1; }
+    .logo-wrap { text-align: center; margin-bottom: 24px; }
+    .logo-wrap img { height: 90px; width: auto; border-radius: 8px; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4)); }
+    .card { background: var(--crema); border-radius: 4px; overflow: hidden; box-shadow: 0 24px 64px rgba(0,0,0,0.5); }
+    .card-header { background: var(--guinda); padding: 20px 28px; text-align: center; border-bottom: 3px solid var(--dorado); }
+    .card-header h1 { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--crema); }
+    .card-body { padding: 28px; }
+    input[type="text"] {
+      width: 100%; padding: 14px; border: 2px solid var(--crema-oscuro); border-radius: 2px;
+      font-size: 1.3rem; text-align: center; letter-spacing: 5px; margin-bottom: 12px; outline: none;
+    }
+    button {
+      width: 100%; padding: 15px; background: var(--guinda); color: var(--dorado-light);
+      border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; letter-spacing: 2px;
+    }
+    .resultado-exito { display: none; margin-top: 20px; }
+    .exito-header { background: var(--guinda); padding: 16px; text-align: center; color: var(--crema); margin-bottom: 15px; border-radius: 2px; }
+    .tickets-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
+    .ticket-item { background: var(--guinda); padding: 15px; text-align: center; border-radius: 2px; color: var(--crema); }
+    .ticket-lbl { font-size: 0.6rem; color: var(--dorado); text-transform: uppercase; margin-bottom: 5px; }
+    .ticket-num { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 900; }
+    .resultado-error { display: none; color: #9f1239; text-align: center; padding: 15px; background: #fff1f2; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="logo-wrap">
+      <img src="logo.png" alt="Boleto Guinda" onerror="this.style.display='none'"/>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h1>Consulta tus boletos</h1>
+      </div>
+
+      <div class="card-body">
+        <input type="text" id="dniInput" placeholder="DNI" maxlength="15">
+        <button id="btnConsultar" onclick="consultar()">Verificar mis boletos</button>
+
+        <!-- Mensaje de Error -->
+        <div class="resultado-error" id="resultadoError">
+          <p id="msgPrincipal">Sin boletos</p>
+        </div>
+
+        <!-- Resultados de Éxito -->
+        <div class="resultado-exito" id="resultadoExito">
+          <div class="exito-header">
+            <div id="exitoNombre" style="font-weight: bold;"></div>
+            <div id="exitoCount" style="font-size: 0.8rem; color: var(--dorado);"></div>
+          </div>
+          <div class="tickets-grid" id="ticketsGrid"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // PEGA AQUÍ TU URL DE POWER AUTOMATE
     const FLOW_URL = "TU_URL_DE_POWER_AUTOMATE_AQUÍ";
 
     async function consultar() {
-      const dniInput = document.getElementById("dniInput");
-      const dni = dniInput.value.trim();
-      const btn = document.getElementById("btnConsultar");
+      const dni = document.getElementById("dniInput").value.trim();
       const resultadoError = document.getElementById("resultadoError");
       const resultadoExito = document.getElementById("resultadoExito");
-      
-      if (!dni) { 
-        alert("Por favor ingresa tu DNI"); 
-        return; 
-      }
+      const btn = document.getElementById("btnConsultar");
 
-      // Reset de interfaz
+      if (!dni) return alert("Ingresa tu DNI");
+
       resultadoError.style.display = "none";
       resultadoExito.style.display = "none";
-      btn.disabled = true;
-      btn.innerHTML = '<span class="loading-dots">Consultando</span>';
+      btn.innerText = "Consultando...";
 
       try {
         const response = await fetch(FLOW_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ dni: dni })
+          body: JSON.stringify({ dni })
         });
-
-        if (!response.ok) throw new Error("Error en la respuesta del servidor");
 
         const data = await response.json();
 
-        // VALIDACIÓN: Power Automate a veces devuelve los datos dentro de 'body' o directo en la raíz
-        const listaBoletos = data.boletos || data; 
-        const total = data.totalBoletos || (Array.isArray(listaBoletos) ? listaBoletos.length : 0);
-
-        if (total > 0 && Array.isArray(listaBoletos)) {
-          // Extraer nombre del primer registro
-          const primerRegistro = listaBoletos[0];
-          const nombre = primerRegistro.Nombre_completo || primerRegistro.Nombre || "Comprador";
-          
-          document.getElementById("exitoNombre").textContent = nombre;
-          document.getElementById("exitoCount").textContent = 
-            total === 1 ? "1 boleto registrado" : total + " boletos registrados";
+        // Usamos los nombres exactos de tu JSON: totalBoletos y boletos
+        if (data.totalBoletos > 0) {
+          document.getElementById("exitoNombre").innerText = data.boletos[0].Nombrecompleto;
+          document.getElementById("exitoCount").innerText = data.totalBoletos + " boletos encontrados";
 
           const grid = document.getElementById("ticketsGrid");
           grid.innerHTML = "";
 
-          listaBoletos.forEach((boleto, i) => {
-            // Intentar obtener el ID de varias fuentes comunes de SharePoint/Excel
-            const ticketID = boleto.ID_Ticket || boleto.ID || boleto.Title || "---";
-            
+          data.boletos.forEach(boleto => {
             const div = document.createElement("div");
             div.className = "ticket-item";
-            div.style.animationDelay = (i * 0.08) + "s";
-            div.innerHTML = `
-              <div class="ticket-lbl">Boleto</div>
-              <div class="ticket-num">${ticketID}</div>
-            `;
+            // Usamos boleto.ID que es donde viene el número del ticket en tu salida
+            div.innerHTML = `<div class="ticket-lbl">Boleto</div><div class="ticket-num">${boleto.ID}</div>`;
             grid.appendChild(div);
           });
 
           resultadoExito.style.display = "block";
         } else {
-          mostrarError("Sin boletos", "No hay boletos validados con este DNI.");
+          resultadoError.style.display = "block";
         }
-      } catch (err) {
-        console.error("Error detallado:", err);
-        mostrarError("Error de conexión", "No logramos conectar con el sistema. Revisa tu internet.");
+      } catch (e) {
+        alert("Error de conexión");
       } finally {
-        btn.disabled = false;
-        btn.textContent = "Verificar mis boletos";
+        btn.innerText = "Verificar mis boletos";
       }
     }
-
-    function mostrarError(titulo, sub) {
-      document.getElementById("msgPrincipal").textContent = titulo;
-      document.getElementById("msgSub").textContent = sub;
-      document.getElementById("resultadoError").style.display = "block";
-    }
-
-    document.getElementById("dniInput").addEventListener("keypress", (e) => {
-      if (e.key === "Enter") consultar();
-    });
-</script>
+  </script>
+</body>
+</html>
