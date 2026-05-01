@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consulta de Boletos</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+    h1 { font-size: 1.5rem; color: #1a1a2e; margin-bottom: 8px; }
+    p.sub { color: #666; font-size: 0.95rem; margin-bottom: 28px; }
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1.1rem;
+      outline: none;
+      transition: border 0.2s;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    input:focus { border-color: #4f46e5; }
+    button {
+      margin-top: 16px;
+      width: 100%;
+      padding: 14px;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover { background: #4338ca; }
+    button:disabled { background: #a5b4fc; cursor: not-allowed; }
+    .resultado {
+      margin-top: 28px;
+      padding: 20px;
+      border-radius: 12px;
+      display: none;
+    }
+    .resultado.exito { background: #f0fdf4; border: 1px solid #bbf7d0; }
+    .resultado.error { background: #fff1f2; border: 1px solid #fecdd3; }
+    .numero { font-size: 3rem; font-weight: 700; color: #16a34a; }
+    .resultado.error .numero { color: #e11d48; font-size: 1.2rem; }
+    .etiqueta { font-size: 0.9rem; color: #555; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎟️ Consulta tus Boletos</h1>
+    <p class="sub">Ingresa tu DNI para ver cuántos boletos tienes registrados</p>
+    <input type="text" id="dniInput" placeholder="Ej: 12345678" maxlength="15" inputmode="numeric"/>
+    <button id="btnConsultar" onclick="consultar()">Consultar</button>
+    <div class="resultado" id="resultado">
+      <div class="numero" id="numeroResultado"></div>
+      <div class="etiqueta" id="etiquetaResultado"></div>
+    </div>
+  </div>
+  <script>
+    const FLOW_URL = "/api/proxy";
+
+    async function consultar() {
+      const dni = document.getElementById("dniInput").value.trim();
+      const btn = document.getElementById("btnConsultar");
+      const resultado = document.getElementById("resultado");
+      const numero = document.getElementById("numeroResultado");
+      const etiqueta = document.getElementById("etiquetaResultado");
+
+      if (!dni) { alert("Por favor ingresa tu DNI"); return; }
+
+      btn.disabled = true;
+      btn.textContent = "Consultando...";
+      resultado.style.display = "none";
+
+      try {
+        const response = await fetch(FLOW_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dni: dni })
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        resultado.style.display = "block";
+
+        if (data.totalBoletos > 0) {
+          resultado.className = "resultado exito";
+          numero.textContent = data.totalBoletos;
+          etiqueta.textContent = data.totalBoletos === 1
+            ? "boleto registrado a tu nombre"
+            : "boletos registrados a tu nombre";
+        } else {
+          resultado.className = "resultado error";
+          numero.textContent = "No encontrado";
+          etiqueta.textContent = "No hay boletos registrados con este DNI";
+        }
+      } catch (err) {
+        resultado.className = "resultado error";
+        resultado.style.display = "block";
+        numero.textContent = "Error";
+        etiqueta.textContent = "No se pudo conectar. Intenta nuevamente.";
+        console.error(err);
+      }
+
+      btn.disabled = false;
+      btn.textContent = "Consultar";
+    }
+
+    document.getElementById("dniInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") consultar();
+    });
+  </script>
+</body>
+</html>
